@@ -25,4 +25,12 @@ Route::name('inventory.')->prefix('inventory')->group(function(){
         Route::delete('{software}/image', 'Inventory\SoftwareController@deleteImage')->name('software.delete.image');
     });
     Route::resource('software', 'Inventory\SoftwareController');
+
+    // ====================================
+    // Inventory
+    // ====================================
+    Route::group(['prefix' => 'device'], function(){
+        
+    });
+    Route::resource('device', 'Inventory\DeviceController');
 });

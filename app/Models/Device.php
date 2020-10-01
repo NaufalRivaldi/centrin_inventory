@@ -10,7 +10,11 @@ class Device extends Model
     protected $guarded = [];
 
     // Relationship
-    public function computerDevices(){
+    public function computer_devices(){
         return $this->hasMany('App\Models\ComputerDevice', 'device_id');
+    }
+
+    public function device_divisions(){
+        return $this->hasOne('App\Models\DeviceDivision', 'device_id');
     }
 }

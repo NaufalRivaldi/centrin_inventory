@@ -36,8 +36,8 @@
       <div class="bg-white py-2 collapse-inner rounded">
         <h6 class="collapse-header">Feature:</h6>
         <a class="collapse-item" href="#">Computer</a>
-        <a class="collapse-item" href="#">Device</a>
-        <a class="collapse-item" href="#">Division</a>
+        <a class="collapse-item" href="{{ route('inventory.device.index') }}">Device</a>
+        <a class="collapse-item" href="">Division</a>
         <a class="collapse-item" href="{{ route('inventory.software.index') }}">Software</a>
         <a class="collapse-item" href="#">Log</a>
       </div>
