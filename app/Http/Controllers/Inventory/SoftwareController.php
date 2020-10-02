@@ -11,6 +11,8 @@ use App\Models\Software;
 use App\Models\Division;
 use App\Models\SoftwareDivision;
 
+use Auth;
+
 class SoftwareController extends Controller
 {
     /**
@@ -119,7 +121,7 @@ class SoftwareController extends Controller
             'software_maxdevice' => $request->software_maxdevice,
             'software_invoiceno' => $request->software_invoiceno,
             'software_scannedinvoice' => $file_name,
-            'updated_by' => 'Tester',
+            'updated_by' => Auth::user()->name,
         ]);
         
         $software = Software::orderBy('id', 'desc')->first();
@@ -190,7 +192,7 @@ class SoftwareController extends Controller
         $data->software_maxdevice = $request->software_maxdevice;
         $data->software_invoiceno = $request->software_invoiceno;
         $data->software_scannedinvoice = $file_name;
-        $data->updated_by = 'Tester';
+        $data->updated_by = Auth::user()->name;
         $data->save();
         
         $software_division = SoftwareDivision::find($data->software_divisions->id);

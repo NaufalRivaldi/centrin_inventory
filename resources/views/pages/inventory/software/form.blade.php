@@ -101,7 +101,7 @@
 
     <div class="card-footer">
       <button type="submit" class="btn btn-primary"><i class="far fa-save"></i> Submit</button>
-      <a href="{{ url()->previous() }}" class="btn btn-danger">Cancel</a>
+      <a href="{{ route('inventory.software.index') }}" class="btn btn-danger">Cancel</a>
     </div>
   </form>
 </div>

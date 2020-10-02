@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Computer extends Model
 {
-    protected $table = 'computer';
+    protected $table = 'computers';
     protected $guarded = [];
 
     // Relationship

@@ -15,6 +15,6 @@ class DeviceDivision extends Model
     }
 
     public function division(){
-        return $this->belongsTo('App\Models\Divisions', 'division_id');
+        return $this->belongsTo('App\Models\Division', 'division_id');
     }
 }

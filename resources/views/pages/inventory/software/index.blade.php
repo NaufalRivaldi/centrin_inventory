@@ -56,7 +56,7 @@
         <p class="software_maxdevice"></p>
         <hr>
         <h6>Site</h6>
-        <p class="site">asd</p>
+        <p class="site"></p>
         <hr>
         <h6>Invoice Number</h6>
         <p class="software_invoiceno"></p>
