@@ -44,13 +44,23 @@ Route::group(['middleware' => 'auth'], function(){
         Route::resource('software', 'Inventory\SoftwareController');
     
         // ====================================
-        // Inventory
+        // Device
         // ====================================
         Route::group(['prefix' => 'device'], function(){
             Route::get('{device}/modal', 'Inventory\DeviceController@showModal')->name('device.show.modal');
             Route::delete('{device}/image', 'Inventory\DeviceController@deleteImage')->name('device.delete.image');
         });
         Route::resource('device', 'Inventory\DeviceController');
+
+        // ====================================
+        // Computer
+        // ====================================
+        Route::group(['prefix' => 'computer'], function(){
+            Route::delete('{computer}/image', 'Inventory\ComputerController@deleteImage')->name('computer.delete.image');
+            Route::get('search/software', 'Inventory\ComputerController@searchSoftware')->name('computer.search.software');
+            Route::get('software/{param}', 'Inventory\ComputerController@json')->name('computer.json');
+        });
+        Route::resource('computer', 'Inventory\ComputerController');
     });
 });
 

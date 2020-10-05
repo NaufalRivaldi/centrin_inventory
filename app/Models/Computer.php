@@ -14,12 +14,20 @@ class Computer extends Model
         return $this->hasMany('App\Models\ComputerComponent', 'computer_id');
     }
 
+    public function computer_component_memories(){
+        return $this->hasMany('App\Models\ComputerComponent', 'computer_id')->where('component_type', 'Memory');
+    }
+
+    public function computer_component_harddrives(){
+        return $this->hasMany('App\Models\ComputerComponent', 'computer_id')->where('component_type', 'Harddrive');
+    }
+
     public function computer_devices(){
         return $this->hasMany('App\Models\ComputerDevice', 'computer_id');
     }
 
     public function computer_divisions(){
-        return $this->hasMany('App\Models\ComputerDivision', 'computer_id');
+        return $this->hasOne('App\Models\ComputerDivision', 'computer_id');
     }
 
     public function computer_histories(){

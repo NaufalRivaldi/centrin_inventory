@@ -7,3 +7,22 @@ function status($status){
     return '<span class="badge badge-secondary">Inactive</span>';
   }
 }
+
+function showComponent($model){
+  $text = '';
+  foreach($model as $row){
+    $text .= $row->component_name.' '.$row->component_size.', ';
+  }
+
+  $text = substr($text, 0, -2);
+  return $text;
+}
+
+function showInvoiceScanned($file){
+  $link = '<span class="badge badge-secondary">Empty</span>';
+  if($file != null){
+    $link = '<span class="badge badge-primary link-normal"><a href="'.asset('upload/inventory/computer/'.$file).'">Show</a></span>';
+  }
+
+  return $link;
+}

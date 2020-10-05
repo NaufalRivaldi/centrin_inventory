@@ -10,3 +10,8 @@
 .datatableModal{
   font-size: .8em;
 }
+
+.link-normal > a{
+  color: #fff;
+  text-decoration: none;
+}
