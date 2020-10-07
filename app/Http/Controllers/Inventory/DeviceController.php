@@ -25,59 +25,6 @@ class DeviceController extends Controller
         $data['page_title'] = 'Device';
         $data['divisions'] = Division::all();
         
-        // datatable ajax
-        if($request->ajax()){
-            if($request->filter_site == null){
-                $devices = Device::with(['device_divisions.division'])->get();
-            }else{
-                if($request->filter_site == ''){
-                    $devices = Device::with(['device_divisions.division'])->get();
-                }else{
-                    $filter_site = $request->filter_site;
-                    $devices = Device::with(['device_divisions.division'])->whereHas('device_divisions', function($query)use($filter_site){
-                        $query->where('division_id', $filter_site);
-                    });
-                }
-            }
-            
-            return datatables()->of($devices)
-                                ->addColumn('device_status', function($data){
-                                    return status($data->device_status);
-                                })
-                                ->addColumn('computer_count', function($data){
-                                    return $data->computer_devices->count().' Computer';
-                                })
-                                ->addColumn('device_invoiceno', function($data){
-                                    $text = $data->device_invoiceno;
-
-                                    if($data->device_scannedinvoice != null){
-                                        $text = $text.'<a href="'.asset('upload/inventory/device/'. $data->device_scannedinvoice).'" class="btn btn-success btn-sm">Show</a>';
-                                    }
-
-                                    return $text;
-                                })
-                                ->addColumn('action', function($data){
-                                    $button = '
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-info device-detail" data-toggle="modal" data-target="#modalDetail" data-id="'.$data->id.'">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                        <a href="'.route('inventory.device.edit', $data->id) .'" class="btn btn-success">
-                                            <i class="fas fa-cog"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-danger device-delete" data-id="'.$data->id .'">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                    ';
-
-                                    return $button;
-                                })
-                                ->rawColumns(['device_status', 'computer_count', 'device_invoiceno', 'action'])
-                                ->addIndexColumn()
-                                ->make(true);
-        }
-        
         return view('pages.inventory.device.index', $data);
     }
 
@@ -172,6 +119,66 @@ class DeviceController extends Controller
         return datatables()->of($computer_devices)
                             ->addIndexColumn()
                             ->make(true);
+    }
+
+    public function ajax(Request $request){
+        switch ($request->param) {
+            case 'datatable':
+                if($request->filter_site == null){
+                    $devices = Device::with(['device_divisions.division'])->get();
+                }else{
+                    if($request->filter_site == ''){
+                        $devices = Device::with(['device_divisions.division'])->get();
+                    }else{
+                        $filter_site = $request->filter_site;
+                        $devices = Device::with(['device_divisions.division'])->whereHas('device_divisions', function($query)use($filter_site){
+                            $query->where('division_id', $filter_site);
+                        });
+                    }
+                }
+                
+                return datatables()->of($devices)
+                                    ->addColumn('device_status', function($data){
+                                        return status($data->device_status);
+                                    })
+                                    ->addColumn('computer_count', function($data){
+                                        return $data->computer_devices->count().' Computer';
+                                    })
+                                    ->addColumn('device_invoiceno', function($data){
+                                        $text = $data->device_invoiceno;
+    
+                                        if($data->device_scannedinvoice != null){
+                                            $text = $text.'<a href="'.asset('upload/inventory/device/'. $data->device_scannedinvoice).'" class="btn btn-success btn-sm">Show</a>';
+                                        }
+    
+                                        return $text;
+                                    })
+                                    ->addColumn('action', function($data){
+                                        $button = '
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button type="button" class="btn btn-info device-detail" data-toggle="modal" data-target="#modalDetail" data-id="'.$data->id.'">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                            <a href="'.route('inventory.device.edit', $data->id) .'" class="btn btn-success">
+                                                <i class="fas fa-cog"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger device-delete" data-id="'.$data->id .'">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                        ';
+    
+                                        return $button;
+                                    })
+                                    ->rawColumns(['device_status', 'computer_count', 'device_invoiceno', 'action'])
+                                    ->addIndexColumn()
+                                    ->make(true);
+                break;
+            
+            default:
+                # code...
+                break;
+        }
     }
 
     /**

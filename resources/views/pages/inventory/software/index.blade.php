@@ -17,10 +17,14 @@
         @endforeach
       </select>
     </p>
+    <div class="table-responsive">
     <table class="table table-striped table-bordered datatable">
       <thead>
         <tr>
           <th>Software Name</th>
+          <th>Serial Number</th>
+          <th>Max Device</th>
+          <th>Scanned Invoice</th>
           <th>Software Used By</th>
           <th>Action</th>
         </tr>
@@ -30,6 +34,7 @@
         
       </tbody>
     </table>
+    </div>
   </div>
 </div>
 @endsection
@@ -41,34 +46,23 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalDetailLabel">Detail Software</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close close-modal" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <h6>Name</h6>
-        <p class="software_name"></p>
-        <hr>
-        <h6>Serial</h6>
-        <p class="software_serial"></p>
-        <hr>
-        <h6>Max Device</h6>
-        <p class="software_maxdevice"></p>
-        <hr>
-        <h6>Site</h6>
-        <p class="site"></p>
-        <hr>
-        <h6>Invoice Number</h6>
-        <p class="software_invoiceno"></p>
-        <hr>
-        <h6>Scan</h6>
-        <p class="software_scannedinvoice"></p>
-        <hr>
-        <h6>Updated By</h6>
-        <p class="updated_by"></p>
+        <table class="table table-striped table-bordered datatableModal">
+          <thead>
+            <tr>
+              <th>Computer Name</th>
+              <th>Computer Type</th>
+              <th>Computer IP Address</th>
+            </tr>
+          </thead>
+        </table>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -88,19 +82,62 @@
         processing: true,
         serverSide: true,
         ajax: {
-          type: "GET",
-          url: "{{ route('inventory.software.index') }}",
+          type: "post",
+          url: "{{ route('inventory.software.ajax') }}",
           data: {
+            _token: "{{ csrf_token() }}",
+            param: 'datatable',
             filter_site: filter_site
           }
         },
         columns: [
           {data: "software_name", name: 'software_name'},
+          {data: "software_serial", name: 'software_serial'},
+          {data: "software_maxdevice", name: 'software_maxdevice'},
+          {data: "software_scannedinvoice", name: 'software_scannedinvoice'},
           {data: "computer_count", name: 'computer_count'},
           {data: "action", name: 'action', orderable: false},
         ]
       });
     }
+
+    function datatableModal(device_id = null){
+      let linkModal = "{{ route('inventory.software.show.modal', 'id') }}";
+      linkModal = linkModal.replace('id', device_id);
+      console.log(linkModal);
+
+      $('.datatableModal').DataTable({
+        processing: true,
+        // serverSide: true,
+        ajax: {
+          type: "GET",
+          url: linkModal,
+          data: {
+            device_id: device_id
+          }
+        },
+        columns: [
+          {data: "computer.computer_name", name: 'computer.computer_name'},
+          {data: "computer.computer_type", name: 'computer.computer_type'},
+          {data: "computer.computer_ipaddress", name: 'computer.computer_ipaddress'},
+        ]
+      });
+    }
+
+    // ======================================
+    // Show modal for detail software
+    // ======================================
+    $(document).on('click', '.software-detail', function(){
+      let $id = $(this).data('id');
+      datatableModal($id);
+    });
+
+    // ======================================
+    // Close modal and destroy datatable
+    // ======================================
+    $(document).on('click', '.close-modal', function(){
+      $('.datatableModal').DataTable().destroy();
+    });
 
     // ====================================
     // Filtering datatable
@@ -110,34 +147,6 @@
 
       $('.datatable').DataTable().destroy();
       datatable($division_id);
-    });
-
-    // ======================================
-    // Show modal for detail software
-    // ======================================
-    $(document).on('click', '.software-detail', function(){
-      let $id = $(this).data('id');
-      let link = "{{ route('inventory.software.show', 'id') }}";
-      link = link.replace('id', $id);
-      
-      $.ajax({
-        url: link,
-        type: "GET",
-        dataType: "json",
-        success: function(result){
-          emptyDetail();
-
-          $('.software_name').html(result.software_name);
-          $('.software_serial').html(result.software_serial);
-          $('.software_maxdevice').html(result.software_maxdevice);
-          $('.site').html(result.software_divisions.division.name);
-          $('.software_invoiceno').html(result.software_invoiceno);
-          $('.software_scannedinvoice').html(`
-            <a href="{{ asset('upload/inventory/software') }}/`+result.software_scannedinvoice+`">`+result.software_scannedinvoice+`</a>
-          `);
-          $('.updated_by').html(result.updated_by);
-        }
-      });
     });
 
     // ======================================

@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use App\Models\Software;
 use App\Models\Division;
 use App\Models\SoftwareDivision;
+use App\Models\ComputerSoftware;
 
 use Auth;
 
@@ -24,47 +25,6 @@ class SoftwareController extends Controller
     {
         $data['page_title'] = 'Software';
         $data['divisions'] = Division::all();
-        
-        // datatable ajax
-        if($request->ajax()){
-            if($request->filter_site == null){
-                $softwares = Software::all();
-            }else{
-                if($request->filter_site == ''){
-                    $softwares = Software::all();
-                }else{
-                    $filter_site = $request->filter_site;
-                    $softwares = Software::whereHas('software_divisions', function($query)use($filter_site){
-                        $query->where('division_id', $filter_site);
-                    });
-                }
-            }
-            
-            return datatables()->of($softwares)
-                                ->addColumn('computer_count', function($data){
-                                    return $data->computer_softwares->count().' Computer';
-                                })
-                                ->addColumn('action', function($data){
-                                    $button = '
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-info software-detail" data-toggle="modal" data-target="#modalDetail" data-id="'.$data->id.'">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                        <a href="'.route('inventory.software.edit', $data->id) .'" class="btn btn-success">
-                                            <i class="fas fa-cog"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-danger software-delete" data-id="'.$data->id .'">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                    ';
-
-                                    return $button;
-                                })
-                                ->rawColumns(['computer_count', 'action'])
-                                ->addIndexColumn()
-                                ->make(true);
-        }
         
         return view('pages.inventory.software.index', $data);
     }
@@ -144,6 +104,71 @@ class SoftwareController extends Controller
         $data = Software::with('software_divisions.division')->where('id', $id)->first();
 
         return response()->json($data);
+    }
+
+    public function showModal($id){
+        $computer_softwares = ComputerSoftware::with(['computer'])->where('software_id', $id)->get();
+            
+        return datatables()->of($computer_softwares)
+                            ->addIndexColumn()
+                            ->make(true);
+    }
+
+    public function ajax(Request $request){
+        switch ($request->param) {
+            case 'datatable':
+                if($request->filter_site == null){
+                    $softwares = Software::all();
+                }else{
+                    if($request->filter_site == ''){
+                        $softwares = Software::all();
+                    }else{
+                        $filter_site = $request->filter_site;
+                        $softwares = Software::whereHas('software_divisions', function($query)use($filter_site){
+                            $query->where('division_id', $filter_site);
+                        });
+                    }
+                }
+                
+                return datatables()->of($softwares)
+                                    ->addColumn('software_scannedinvoice', function($data){
+                                        if($data->software_scannedinvoice == null){
+                                            $link = $data->software_invoiceno.' <button class="btn btn-sm btn-secondary">Empty</button>';
+                                        }else{
+                                            $link = $data->software_invoiceno.' <a href="'.asset('upload/inventory/software/'.$data->software_scannedinvoice).'" class="btn btn-sm btn-success">Show</a>';
+                                        }
+        
+                                        return $link;
+                                    })
+                                    ->addColumn('computer_count', function($data){
+                                        return $data->computer_softwares->count().' Computer';
+                                    })
+                                    ->addColumn('action', function($data){
+                                        $button = '
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button type="button" class="btn btn-info software-detail" data-toggle="modal" data-target="#modalDetail" data-id="'.$data->id.'">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                            <a href="'.route('inventory.software.edit', $data->id) .'" class="btn btn-success">
+                                                <i class="fas fa-cog"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger software-delete" data-id="'.$data->id .'">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                        ';
+        
+                                        return $button;
+                                    })
+                                    ->rawColumns(['software_scannedinvoice', 'computer_count', 'action'])
+                                    ->addIndexColumn()
+                                    ->make(true);
+                break;
+            
+            default:
+                # code...
+                break;
+        }
     }
 
     /**

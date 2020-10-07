@@ -199,7 +199,7 @@
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            <label for="">Depertment</label>
+            <label for="">Department</label>
             <select name="department" class="form-control {{ $errors->has('department') ? 'is-invalid' : '' }}" required>
               <option value="">- Choose Department -</option>
               @foreach($departments as $department)
@@ -227,14 +227,31 @@
               </button>
             </label>
 
-            <div class="row-memory-1">
-              <select name="memory_type[]" class="form-control {{ $errors->has('memory_type') ? 'is-invalid' : '' }}">
-                <option value="">- Choose memory_type -</option>
-                @foreach($memory_types as $memory_type)
-                  <option value="{{ $memory_type }}">{{ $memory_type }}</option>
-                @endforeach
-              </select>
-            </div>
+            @if($computer->id == '')
+              <div class="row-memory-1">
+                <select name="memory_type[]" class="form-control {{ $errors->has('memory_type') ? 'is-invalid' : '' }}">
+                  <option value="">- Choose memory_type -</option>
+                  @foreach($memory_types as $memory_type)
+                    <option value="{{ $memory_type }}">{{ $memory_type }}</option>
+                  @endforeach
+                </select>
+              </div>
+            @else
+              @php
+                $no = 1;
+              @endphp
+              
+              @foreach($computer->computer_component_memories as $row)
+                <div class="row-memory-{{ $no++ }} mt-2">
+                  <select name="memory_type[]" class="form-control {{ $errors->has('memory_type') ? 'is-invalid' : '' }}">
+                    <option value="">- Choose memory_type -</option>
+                    @foreach($memory_types as $memory_type)
+                      <option value="{{ $memory_type }}" {{ $row->component_name == $memory_type ? 'selected' : '' }}>{{ $memory_type }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              @endforeach
+            @endif
 
             <!-- error -->
             @if($errors->has('memory_type'))
@@ -249,9 +266,24 @@
             <label for="">Memory Size</label>
             <div class="row">
               <div class="col-md-6 form-memory-size">
-                <div class="row-memory-1">
-                  <input type="number" name="memory_size[]" class="form-control {{ $errors->has('memory_size') ? 'is-invalid' : '' }}" placeholder="Memory Size">
-                </div>
+                @if($computer->id == '')
+                  <div class="row-memory-1">
+                    <input type="number" name="memory_size[]" class="form-control {{ $errors->has('memory_size') ? 'is-invalid' : '' }}" placeholder="Memory Size">
+                  </div>
+                @else
+                  @php
+                    $no = 1;
+                  @endphp
+                  
+                  @foreach($computer->computer_component_memories as $row)
+                    @php
+                      $arrayData = explode(' ', $row->component_size)
+                    @endphp
+                    <div class="row-memory-{{ $no++ }} mt-2">
+                      <input type="number" name="memory_size[]" class="form-control {{ $errors->has('memory_size') ? 'is-invalid' : '' }}" placeholder="Memory Size" value="{{ $arrayData[0] }}">
+                    </div>
+                  @endforeach
+                @endif
 
                 <!-- error -->
                 @if($errors->has('memory_size'))
@@ -261,21 +293,48 @@
                 @endif
               </div>
               <div class="col-md-6 form-memory-unit-size">
-                <div class="row row-memory-1">
-                  <div class="col-md-8">
-                    <select name="memory_unit_size[]" class="form-control {{ $errors->has('division_id') ? 'is-invalid' : '' }}">
-                      <option value="">- Choose Memory Unit Size -</option>
-                      @foreach($memory_unit_sizes as $memory_unit_size)
-                        <option value="{{ $memory_unit_size }}">{{ $memory_unit_size }}</option>
-                      @endforeach
-                    </select>
+                @if($computer->id == '')
+                  <div class="row row-memory-1">
+                    <div class="col-md-8">
+                      <select name="memory_unit_size[]" class="form-control {{ $errors->has('division_id') ? 'is-invalid' : '' }}">
+                        <option value="">- Choose Memory Unit Size -</option>
+                        @foreach($memory_unit_sizes as $memory_unit_size)
+                          <option value="{{ $memory_unit_size }}">{{ $memory_unit_size }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <button type="button" class="btn btn-danger remove-memory" data-row="1">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
                   </div>
-                  <div class="col-md-4">
-                    <button type="button" class="btn btn-danger remove-memory" data-row="1">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                  </div>
-                </div>
+                @else
+                  @php
+                    $no = 1;
+                  @endphp
+                  
+                  @foreach($computer->computer_component_memories as $row)
+                    @php
+                      $arrayData = explode(' ', $row->component_size)
+                    @endphp
+                    <div class="row row-memory-{{ $no }} mt-2">
+                      <div class="col-md-8">
+                        <select name="memory_unit_size[]" class="form-control {{ $errors->has('division_id') ? 'is-invalid' : '' }}">
+                          <option value="">- Choose Memory Unit Size -</option>
+                          @foreach($memory_unit_sizes as $memory_unit_size)
+                            <option value="{{ $memory_unit_size }}" {{ $arrayData[1] == $memory_unit_size ? 'selected' : '' }}>{{ $memory_unit_size }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <button type="button" class="btn btn-danger remove-memory" data-row="{{ $no++ }}">
+                          <i class="fas fa-minus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  @endforeach
+                @endif
 
                 <!-- error -->
                 @if($errors->has('memory_unit_size'))
@@ -299,9 +358,20 @@
               </button>
             </label>
 
-            <div class="row-harddrive-1">
-              <input type="text" name="harddrive_brand[]" class="form-control {{ $errors->has('harddrive_brand') ? 'is-invalid' : '' }}" placeholder="Harddrive brand">
-            </div>
+            @if($computer->id == '')
+              <div class="row-harddrive-1">
+                <input type="text" name="harddrive_brand[]" class="form-control {{ $errors->has('harddrive_brand') ? 'is-invalid' : '' }}" placeholder="Harddrive brand">
+              </div>
+            @else
+              @php
+                $no = 1;
+              @endphp
+              @foreach($computer->computer_component_harddrives as $row)
+                <div class="row-harddrive-{{ $no++ }} mt-2">
+                  <input type="text" name="harddrive_brand[]" class="form-control {{ $errors->has('harddrive_brand') ? 'is-invalid' : '' }}" placeholder="Harddrive brand" value="{{ $row->component_name }}">
+                </div>
+              @endforeach
+            @endif
 
             <!-- error -->
             @if($errors->has('harddrive_brand'))
@@ -316,10 +386,23 @@
             <label for="">Hard Drive Size</label>
             <div class="row">
               <div class="col-md-6 form-harddrive-size">
-                <div class="row-harddrive-1">
-                  <input type="number" name="harddrive_size[]" class="form-control {{ $errors->has('harddrive_size') ? 'is-invalid' : '' }}" placeholder="Harddrive Size">
-                </div>
-
+                @if($computer->id == '')
+                  <div class="row-harddrive-1">
+                    <input type="number" name="harddrive_size[]" class="form-control {{ $errors->has('harddrive_size') ? 'is-invalid' : '' }}" placeholder="Harddrive Size">
+                  </div>
+                @else
+                  @php
+                    $no = 1;
+                  @endphp
+                  @foreach($computer->computer_component_harddrives as $row)
+                    @php
+                      $arrayData = explode(' ', $row->component_size)
+                    @endphp
+                    <div class="row-harddrive-{{ $no++ }} mt-2">
+                      <input type="number" name="harddrive_size[]" class="form-control {{ $errors->has('harddrive_size') ? 'is-invalid' : '' }}" placeholder="Harddrive Size" value="{{ $arrayData[0] }}">
+                    </div>
+                  @endforeach
+                @endif
                 <!-- error -->
                 @if($errors->has('harddrive_size'))
                   <small class="text-danger">
@@ -328,21 +411,47 @@
                 @endif
               </div>
               <div class="col-md-6 form-harddrive-unit-size">
-                <div class="row row-harddrive-1">
-                  <div class="col-md-8">
-                    <select name="harddrive_unit_size[]" class="form-control {{ $errors->has('division_id') ? 'is-invalid' : '' }}">
-                      <option value="">- Choose Harddrive Unit Size -</option>
-                      @foreach($harddrive_unit_sizes as $harddrive_unit_size)
-                        <option value="{{ $harddrive_unit_size }}">{{ $harddrive_unit_size }}</option>
-                      @endforeach
-                    </select>
+                @if($computer->id == '')
+                  <div class="row row-harddrive-1">
+                    <div class="col-md-8">
+                      <select name="harddrive_unit_size[]" class="form-control {{ $errors->has('division_id') ? 'is-invalid' : '' }}">
+                        <option value="">- Choose Harddrive Unit Size -</option>
+                        @foreach($harddrive_unit_sizes as $harddrive_unit_size)
+                          <option value="{{ $harddrive_unit_size }}">{{ $harddrive_unit_size }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <button type="button" class="btn btn-danger remove-harddrive" data-row="1">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
                   </div>
-                  <div class="col-md-4">
-                    <button type="button" class="btn btn-danger remove-harddrive" data-row="1">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                  </div>
-                </div>
+                @else
+                  @php
+                    $no = 1;
+                  @endphp
+                  @foreach($computer->computer_component_harddrives as $row)
+                    @php
+                      $arrayData = explode(' ', $row->component_size)
+                    @endphp
+                    <div class="row row-harddrive-{{ $no }} mt-2">
+                      <div class="col-md-8">
+                        <select name="harddrive_unit_size[]" class="form-control {{ $errors->has('division_id') ? 'is-invalid' : '' }}">
+                          <option value="">- Choose Harddrive Unit Size -</option>
+                          @foreach($harddrive_unit_sizes as $harddrive_unit_size)
+                            <option value="{{ $harddrive_unit_size }}" {{ $arrayData[1] == $harddrive_unit_size ? 'selected' : '' }}>{{ $harddrive_unit_size }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <button type="button" class="btn btn-danger remove-harddrive" data-row="{{ $no++ }}">
+                          <i class="fas fa-minus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  @endforeach
+                @endif
 
                 <!-- error -->
                 @if($errors->has('harddrive_unit_size'))
@@ -366,14 +475,30 @@
               </button>
             </label>
 
-            <div class="row-software-1">
-              <select name="software_name[]" id="" class="form-control software-name" data-row='1'>
-                <option value="">- Choose Software -</option>
-                @foreach($softwares as $software)
-                  <option value="{{ $software->software_name }}">{{ $software->software_name }}</option>
-                @endforeach
-              </select>
-            </div>
+            @if($computer->id == '')
+              <div class="row-software-1">
+                <select name="software_name[]" id="" class="form-control software-name" data-row='1'>
+                  <option value="">- Choose Software -</option>
+                  @foreach($softwares as $software)
+                    <option value="{{ $software->software_name }}">{{ $software->software_name }}</option>
+                  @endforeach
+                </select>
+              </div>
+            @else
+              @php
+                $no = 1;
+              @endphp
+              @foreach($computer->computer_softwares as $row)
+                <div class="row-software-{{ $no }} mt-2">
+                  <select name="software_name[]" id="" class="form-control software-name" data-row='{{ $no++ }}'>
+                    <option value="">- Choose Software -</option>
+                    @foreach($softwares as $software)
+                      <option value="{{ $software->software_name }}" {{ $row->software_name == $software->software_name ? 'selected' : '' }}>{{ $software->software_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              @endforeach
+            @endif
 
             <!-- error -->
             @if($errors->has('software_name'))
@@ -386,18 +511,41 @@
         <div class="col-md-6">
           <div class="form-group form-software-serial-number">
             <label for="">Software Serial Number</label>
-            <div class="row row-software-1">
-              <div class="col-md-10">
-                <select name="software_serial_number[]" class="form-control software-serial-number-1">
-                  <option value="">- Choose Serial Number -</option>
-                </select>
+            @if($computer->id == '')
+              <div class="row row-software-1">
+                <div class="col-md-10">
+                  <select name="software_serial_number[]" class="form-control software-serial-number-1">
+                    <option value="">- Choose Serial Number -</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-danger remove-software" data-row="1">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
               </div>
-              <div class="col-md-2">
-                <button type="button" class="btn btn-danger remove-software" data-row="1">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
+            @else
+              @php
+                $no = 1;
+              @endphp
+              @foreach($computer->computer_softwares as $row)
+                <div class="row row-software-{{ $no }} mt-2">
+                  <div class="col-md-10">
+                    <select name="software_serial_number[]" class="form-control software-serial-number-{{ $no }}">
+                      <option value="">- Choose Serial Number -</option>
+                      @foreach(softwareSerial($row->software_name) as $software)
+                        <option value="{{ $software->id }}" {{ $row->software_id == $software->id ? 'selected' : '' }}>{{ $software->software_serial }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <button type="button" class="btn btn-danger remove-software" data-row="{{ $no++ }}">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+              @endforeach
+            @endif
 
             <!-- error -->
             @if($errors->has('software_serial_number'))
@@ -419,21 +567,44 @@
               </button>
             </label>
 
-            <div class="row row-device-1">
-              <div class="col-md-11">
-                <select name="device_id[]" id="" class="form-control">
-                  <option value="">- Choose Device -</option>
-                  @foreach($devices as $device)
-                    <option value="{{ $device->device_id }}">{{ $device->device_name }}</option>
-                  @endforeach
-                </select>
+            @if($computer->id == '')
+              <div class="row row-device-1">
+                <div class="col-md-11">
+                  <select name="device_id[]" id="" class="form-control">
+                    <option value="">- Choose Device -</option>
+                    @foreach($devices as $device)
+                      <option value="{{ $device->id }}">{{ $device->device_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                <div class="col-md-1">
+                  <button type="button" class="btn btn-danger remove-device" data-row="1">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                </div>
               </div>
-              <div class="col-md-1">
-                <button type="button" class="btn btn-danger remove-device" data-row="1">
-                    <i class="fas fa-minus"></i>
-                  </button>
-              </div>
-            </div>
+            @else
+              @php
+                $no = 1;
+              @endphp
+              @foreach($computer->computer_devices as $row)
+                <div class="row row-device-{{ $no }}">
+                  <div class="col-md-11">
+                    <select name="device_id[]" id="" class="form-control">
+                      <option value="">- Choose Device -</option>
+                      @foreach($devices as $device)
+                        <option value="{{ $device->id }}" {{ $row->device_id == $device->id ? 'selected' : '' }}>{{ $device->device_name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="col-md-{{ $no++ }}">
+                    <button type="button" class="btn btn-danger remove-device" data-row="1">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                  </div>
+                </div>
+              @endforeach
+            @endif
 
             <!-- error -->
             @if($errors->has('device_id'))
@@ -454,7 +625,7 @@
 
       <div class="form-group">
         <label for="">Invoice Number</label>
-        <input type="text" name="computer_invoiceno" class="form-control">
+        <input type="text" name="computer_invoiceno" class="form-control" value="{{ $computer->computer_invoiceno }}">
       </div>
 
       <div class="form-group">
@@ -498,14 +669,14 @@
     // ========================================================
     // Global variable
     // ========================================================
-    var rowMemory = 1;
-    var rowHarddrive = 1;
-    var rowSoftware = 1;
-    var rowDevice = 1;
+    var rowMemory = "{{ empty($computer->computer_component_memories) ? '1' : count($computer->computer_component_memories) }}";
+    var rowHarddrive = "{{ empty($computer->computer_component_harddrives) ? '1' : count($computer->computer_component_harddrives) }}";
+    var rowSoftware = "{{ empty($computer->computer_softwares) ? '1' : count($computer->computer_softwares) }}";
+    var rowDevice = "{{ empty($computer->computer_devices) ? '1' : count($computer->computer_devices) }}";
 
     $(document).on('click', '.delete-image', function(){
       let $id = $(this).data('id');
-      let link = "{{ route('inventory.device.delete.image', 'id') }}";
+      let link = "{{ route('inventory.computer.delete.image', 'id') }}";
       link = link.replace('id', $id);
 
       Swal.fire({

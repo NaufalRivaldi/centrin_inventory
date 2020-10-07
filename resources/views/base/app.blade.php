@@ -20,6 +20,8 @@
 
   <!-- Datatable css -->
   <link rel="stylesheet" href="{{ asset('css/datatable-bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/datatable-button.css') }}">
+  <!-- <link rel="stylesheet" href="{{ asset('css/datatable-jquery.css') }}"> -->
   <link rel="stylesheet" href="{{ asset('sb-admin/css/custom.css') }}">
 
   @stack('css')
@@ -124,7 +126,14 @@
 
   <!-- Datatable js -->
   <script src="{{ asset('js/datatable.js') }}"></script>
+  <script src="{{ asset('js/datatable-button.js') }}"></script>
   <script src="{{ asset('js/datatable-bootstrap.js') }}"></script>
+  <script src="{{ asset('js/button-flash.js') }}"></script>
+  <script src="{{ asset('js/js-zip.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="{{ asset('js/button-html5.js') }}"></script>
+  <script src="{{ asset('js/button-print.js') }}"></script>
 
   <!-- Sweetalert js -->
   <script src="{{ asset('js/sweetalert.js') }}"></script>

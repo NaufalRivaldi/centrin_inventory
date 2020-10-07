@@ -8,13 +8,19 @@
     </a>
   </div>
   <div class="card-body">
-    <p>
+    <p class="filter">
       <b>Sites: </b> 
       <select name="filter_site">
         <option value="">All Sites</option>
         @foreach($divisions as $division)
           <option value="{{ $division->id }}">{{ $division->name }}</option>
         @endforeach
+      </select>
+
+      <b>Status: </b>
+      <select name="filter_status">
+        <option value="1">Active</option>
+        <option value="0">Inactive</option>
       </select>
     </p>
     <div class="table-responsive">
@@ -55,15 +61,22 @@
     // ====================================
     datatable();
 
-    function datatable(filter_site = null){
+    function datatable(filter_site = null, filter_status = null){
       $('.datatable').DataTable({
         processing: true,
         serverSide: true,
+        dom: 'Bfrtip',
+        buttons: [
+            'csv', 'excel', 'pdf', 'print'
+        ],
         ajax: {
-          type: "GET",
-          url: "{{ route('inventory.computer.index') }}",
+          type: "POST",
+          url: "{{ route('inventory.computer.ajax') }}",
           data: {
-            filter_site: filter_site
+            _token: "{{ csrf_token() }}",
+            param: 'datatable',
+            filter_site: filter_site,
+            filter_status: filter_status,
           }
         },
         columns: [
@@ -88,11 +101,16 @@
     // ====================================
     // Filtering datatable
     // ====================================
-    $('select[name="filter_site"]').on('change', function(){
-      $division_id = $(this).val();
+    $('.filter').on('change', function(){
+      var $filter_site = $('select[name="filter_site"]').val();
+      var $filter_status = $('select[name="filter_status"]').val();
+
+      if($filter_status == 'null'){
+        $filter_status = null;
+      }
 
       $('.datatable').DataTable().destroy();
-      datatable($division_id);
+      datatable($filter_site, $filter_status);
     });
 
     // ======================================

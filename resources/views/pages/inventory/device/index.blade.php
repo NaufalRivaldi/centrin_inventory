@@ -87,9 +87,11 @@
         processing: true,
         serverSide: true,
         ajax: {
-          type: "GET",
-          url: "{{ route('inventory.device.index') }}",
+          type: "POST",
+          url: "{{ route('inventory.device.ajax') }}",
           data: {
+            _token: "{{ csrf_token() }}",
+            param: 'datatable',
             filter_site: filter_site
           }
         },

@@ -26,6 +26,13 @@
     Menu
   </div>
 
+  <!-- Nav Item -->
+  <li class="nav-item">
+    <a class="nav-link" href="{{ route('user.index') }}">
+      <i class="far fa-user"></i>
+      <span>User</span></a>
+  </li>
+
   <!-- Nav Item - Pages Collapse Menu -->
   <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInventory" aria-expanded="true" aria-controls="collapseInventory">
@@ -38,7 +45,7 @@
         <a class="collapse-item" href="{{ route('inventory.computer.index') }}">Computer</a>
         <a class="collapse-item" href="{{ route('inventory.device.index') }}">Device</a>
         <a class="collapse-item" href="{{ route('inventory.software.index') }}">Software</a>
-        <a class="collapse-item" href="#">Log</a>
+        <a class="collapse-item" href="{{ route('inventory.log.index') }}">Log Computer</a>
       </div>
     </div>
   </li>

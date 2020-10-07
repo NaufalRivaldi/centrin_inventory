@@ -104,6 +104,14 @@
       </div>
     </div>
   </div>
+  <div class="card-footer">
+    <a href="{{ route('inventory.computer.index') }}" class="btn btn-sm">
+      <i class="fas fa-chevron-left"></i> Back to Computer List
+    </a> 
+    <a href="{{ route('inventory.computer.edit', $computer->id) }}" class="btn btn-sm btn-warning">
+      <i class="far fa-edit"></i> Edit Computer Info
+    </a>
+  </div>
 </div>
 @endsection
 

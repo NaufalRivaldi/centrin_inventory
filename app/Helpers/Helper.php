@@ -26,3 +26,7 @@ function showInvoiceScanned($file){
 
   return $link;
 }
+
+function softwareSerial($software_name){
+  return \App\Models\Software::where('software_name', $software_name)->get();
+}
