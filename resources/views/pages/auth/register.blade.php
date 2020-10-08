@@ -1,13 +1,16 @@
 @extends('pages.auth.app')
 
 @section('content')
-<div class="row justify-content-center">
-  <div class="col-lg-12">
-    <div class="p-5">
-      <div class="text-center">
-        <h1 class="h4 text-gray-900 mb-4">{{ $page_title }}</h1>
+<div id="wrapper" class="d-flex align-items-center justify-content-center">
+  <div class="auth-box register">
+    <div class="content">
+      <div class="header">
+        <div class="logo text-center">
+          <h3>LOGO</h3>
+        </div>
+        <p class="lead">Create an account</p>
       </div>
-      <form class="user" method="POST" action="{{ route('register.store') }}">
+      <form class="user form-auth-small" method="POST" action="{{ route('register.store') }}">
         @csrf
         <div class="form-group">
           <input type="text" name="name" class="form-control form-control-user {{ $errors->has('name') ? 'is-invalid' : '' }}" placeholder="Full name" value="{{ old('name') }}" required>
@@ -52,12 +55,7 @@
         <button type="submit" class="btn btn-primary btn-user btn-block">
           Register Account
         </button>
-      </form>
-      <hr>
-      <div class="text-center small">
-        Already have account? login
-        <a href="{{ route('register') }}">here!</a>
-      </div>
+      </form>      
     </div>
   </div>
 </div>

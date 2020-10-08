@@ -1,33 +1,46 @@
 @extends('pages.auth.app')
 
 @section('content')
-<div class="row justify-content-center">
-  <div class="col-lg-6">
-    <div class="p-5">
-      <div class="text-center">
-        <h1 class="h4 text-gray-900 mb-4">{{ $page_title }}</h1>
-      </div>
-      <form class="user" method="POST" action="{{ route('login.post') }}">
-        @csrf
-        <div class="form-group">
-          <input type="email" name="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address..." required>
-        </div>
-        <div class="form-group">
-          <input type="password" name="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" required>
-        </div>
-        <div class="form-group">
-          <div class="custom-control custom-checkbox small">
-            <input type="checkbox" class="custom-control-input" id="customCheck">
-            <label class="custom-control-label" for="customCheck">Remember Me</label>
+<div id="wrapper" class="d-flex align-items-center justify-content-center">
+  <div class="auth-box ">
+    <div class="left">
+      <div class="content">
+        <div class="header">
+          <div class="logo text-center">
+            <h3>LOGO</h3>
           </div>
+          <p class="lead">Login to your account</p>
         </div>
-        <button type="submit" class="btn btn-primary btn-user btn-block">
-          Login
-        </button>
-      </form>
-      <hr>
-      <div class="text-center">
-        <a class="small" href="{{ route('register') }}">Create an Account!</a>
+        @include('base.layouts.alert')
+        <form class="form-auth-small" method="POST" action="{{ route('login.post') }}">
+          @csrf
+          <div class="form-group">
+            <label for="signin-email" class="control-label sr-only">Email</label>
+            <input type="email" name="email" class="form-control" id="signin-email" placeholder="Email">
+          </div>
+          <div class="form-group">
+            <label for="signin-password" class="control-label sr-only">Password</label>
+            <input type="password" name="password" class="form-control" id="signin-password" placeholder="Password">
+          </div>
+          <div class="form-group">
+            <label class="fancy-checkbox element-left custom-bgcolor-blue">
+              <input type="checkbox">
+              <span class="text-muted">Remember me</span>
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-block">LOGIN</button>
+          <div class="bottom">
+            <span class="helper-text d-block">Don't have an account? <a href="{{ route('register') }}">Register</a></span>
+            <!-- <span class="helper-text"><i class="fa fa-lock"></i> <a href="page-forgot-password.html">Forgot password?</a></span> -->
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="right">
+      <div class="overlay"></div>
+      <div class="content text">
+        <h1 class="heading">{{ env('APP_NAME') }}</h1>
+        <p>by The Develovers</p>
       </div>
     </div>
   </div>
